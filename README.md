@@ -208,6 +208,57 @@ pytest -v
 
 ---
 
+## 🔍 How to Audit Your Own AWS Account (User Quickstart)
+
+Want to run this governance audit on **your own AWS account**? Follow these 4 steps:
+
+> **🔒 Security & Safety Assurance**: The audit is **100% read-only and non-destructive**. It only requires read permissions (`SecurityAudit` or `ViewOnlyAccess`) to inspect configurations via `boto3`. It will **never** alter, revoke, or delete any of your cloud resources.
+
+### Step 1: Set Up Read-Only AWS Credentials
+Ensure your terminal has active AWS credentials for the account you wish to audit:
+```bash
+aws configure
+# Verify active connection and account ID
+aws sts get-caller-identity
+```
+
+### Step 2: (Optional) Tailor the Baseline to Your Organization
+Open `baseline/sample_baseline.yaml` and specify your team's approved roles, required permissions boundaries, and guardrails:
+```yaml
+approved_roles:
+  - role_name: "AppBackendRole"
+    allowed_attached_policies:
+      - "arn:aws:iam::123456789012:policy/AppLeastPrivilegePolicy"
+    permissions_boundary_required: true
+    permissions_boundary: "arn:aws:iam::123456789012:policy/StandardBoundary"
+```
+*(If left as default, the engine will still audit your account against CIS benchmarks: flagging wildcards `*`, root access keys, inactive credentials, and 14+ privilege escalation paths).*
+
+### Step 3: Execute the Live Scan
+Run the audit engine with the `--live` flag:
+```bash
+python src/main.py --live
+```
+
+### Step 4: Inspect Your Account's Custom Audit Report
+Open the newly generated HTML dashboard tailored specifically to your AWS account:
+```powershell
+# Windows
+Start-Process reports\latest_audit_report.html
+
+# macOS
+open reports/latest_audit_report.html
+
+# Linux
+xdg-open reports/latest_audit_report.html
+```
+You get:
+- Your real Account ID and overall **Security Posture Rating** (`GOOD`, `FAIR`, or `POOR`).
+- Co-located findings prioritized from **P1 (Immediate)** to **P4 (Advisory)**.
+- Specific, copy-pasteable remediation commands for every violation.
+
+---
+
 ## ☁️ Live AWS Deployment via Terraform
 
 Deploy the automated governance platform into your AWS account with a single command:

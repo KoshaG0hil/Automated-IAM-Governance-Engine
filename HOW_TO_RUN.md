@@ -112,17 +112,33 @@ All 8 tests should pass in under 0.5s.
 
 ---
 
-## ☁️ Option 5: Run Against a Live AWS Account (Optional)
+## ☁️ Option 5: Audit Your Own Live AWS Account (User Quickstart)
 
-If you have active AWS credentials configured:
+To audit your company's or your personal AWS account:
 
+> **🔒 Non-Destructive Guarantee**: The live scan is **100% read-only**. It requires only standard read-only IAM permissions (`SecurityAudit` or `ViewOnlyAccess`) to inspect configurations via `boto3`. It will **never** modify, detach, or delete any of your cloud resources.
+
+### 1. Authenticate with AWS
 ```bash
-# Verify AWS connection
+aws configure
+# Verify target account connection
 aws sts get-caller-identity
+```
 
-# Run audit scan against your real AWS account
+### 2. (Optional) Customize Your Baseline
+Update `baseline/sample_baseline.yaml` to specify which roles and permissions boundaries are approved in your company. If left as default, the engine will still audit your account against CIS benchmarks (wildcards, dormant keys, privilege escalation vectors, MFA).
+
+### 3. Run the Live Audit
+```bash
 python src/main.py --live
 ```
+
+### 4. Review Your Results
+```powershell
+# Open your custom audit dashboard
+Start-Process reports\latest_audit_report.html
+```
+The report presents your real AWS Account ID, posture score, co-located findings (P1 to P4), and exact copy-pasteable remediation steps.
 
 ---
 
