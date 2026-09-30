@@ -19,6 +19,15 @@ An enterprise-grade cloud security platform that continuously evaluates AWS Iden
 
 ---
 
+## 🌐 Live Interactive Demo
+
+You can interact with the generated security audit dashboard directly in your web browser:  
+👉 **[Launch Live IAM Governance Audit Dashboard](https://koshag0hil.github.io/Automated-IAM-Governance-Engine/)**
+
+*Features real-time client-side severity filtering, compound risk scores, affected resource drill-downs, and actionable remediation instructions.*
+
+---
+
 ## 🏛️ System Architecture
 
 ```
@@ -122,12 +131,41 @@ pip install -r requirements.txt
 Run a complete compliance scan using the included realistic mock IAM environment. Generates interactive HTML, CSV, and JSON audit evidence immediately:
 
 ```bash
-python src/main.py --mock tests/mock_data/mock_iam_state.json --mock-csv tests/mock_data/mock_credential_report.csv
+python src/main.py
 ```
 
-Open the generated HTML dashboard:
-```
-reports/latest_audit_report.html
+**Terminal Output Preview:**
+```text
+================================================================================
+ 🚀 AUTOMATED IAM GOVERNANCE & CONFIGURATION DRIFT DETECTION ENGINE
+================================================================================
+[*] Target Account ID : 123456789012
+[*] Roles Discovered  : 3
+[*] Users Discovered  : 2
+[*] Loading Baseline  : baseline/sample_baseline.yaml
+
+--------------------------------------------------------------------------------
+ 📊 EXECUTIVE AUDIT SUMMARY & ANOMALY POSTURE
+--------------------------------------------------------------------------------
+  • Security Posture Score : 0/100
+  • Posture Rating         : POOR (High Risk / Multiple Critical Drifts)
+  • Total Findings         : 16
+  • Critical Severity      : 4
+  • High Severity          : 7
+  • Medium Severity        : 5
+--------------------------------------------------------------------------------
+
+🔎 TOP PRIORITIZED FINDINGS:
+╭────────────────┬────────────┬────────┬──────────────────────────┬────────────────────────────────────────────╮
+│ Priority       │ Severity   │   Risk │ Resource                 │ Finding Title                              │
+├────────────────┼────────────┼────────┼──────────────────────────┼────────────────────────────────────────────┤
+│ P1 - IMMEDIATE │ CRITICAL   │    100 │ AppBackendServiceRole    │ Unapproved Policy Attached to Role         │
+│ P1 - IMMEDIATE │ HIGH       │    100 │ AppBackendServiceRole    │ Missing Permissions Boundary on Role       │
+│ P1 - IMMEDIATE │ CRITICAL   │    100 │ DevOpsShadowAdminRole    │ Privilege Escalation: IAM CreatePolicyVer  │
+│ P1 - IMMEDIATE │ HIGH       │    100 │ DevOpsShadowAdminRole    │ Privilege Escalation: EC2 RunInstances     │
+│ P1 - IMMEDIATE │ CRITICAL   │    100 │ root                     │ Active Access Keys on Root Account         │
+│ P1 - IMMEDIATE │ CRITICAL   │    100 │ root                     │ MFA Not Enabled on Root Account            │
+╰────────────────┴────────────┴────────┴──────────────────────────┴────────────────────────────────────────────╯
 ```
 
 ### 3. Simulate a Real-Time CloudTrail IAM Mutation Event
@@ -137,11 +175,32 @@ Simulate the ingestion of an unauthorized `AttachRolePolicy` event attaching `Ad
 python src/main.py --simulate-event tests/mock_events/cloudtrail_attach_admin_policy.json
 ```
 
-### 4. Run Unit Tests
+**Output:**
+```text
+🚨 [IAM GOVERNANCE ALERT] CRITICAL - Unapproved Policy Attached to Role 'AppBackendServiceRole'
+======================================================================
+• Priority:           P1 - IMMEDIATE
+• Anomaly Risk Score: 100/100
+• Category:           POLICY_DRIFT
+• Trigger Source:     CloudTrail:AttachRolePolicy
+• Resource Type:      Role
+• Resource Name:      AppBackendServiceRole
+• Resource ARN:       arn:aws:iam::123456789012:role/AppBackendServiceRole
+
+Details:
+Role 'AppBackendServiceRole' has unapproved policy attached: arn:aws:iam::aws:policy/AdministratorAccess.
+
+Recommended Remediation:
+Detach policy arn:aws:iam::aws:policy/AdministratorAccess from role 'AppBackendServiceRole' or submit change control to update baseline.
+======================================================================
+```
+
+### 4. Run Automated Test Suite
 Verify all detection logic, privesc signatures, and anomaly scoring algorithms:
 
 ```bash
 pytest -v
+# 8 passed in 0.22s
 ```
 
 ---
