@@ -1,0 +1,169 @@
+{
+  "rules": [
+    {
+      "id": "PRIVESC-01",
+      "name": "IAM CreatePolicyVersion",
+      "severity": "CRITICAL",
+      "risk_score": 95,
+      "description": "User can create a new version of an existing policy containing unrestricted administrative access and set it as the default version.",
+      "required_permissions": [
+        "iam:CreatePolicyVersion"
+      ],
+      "mitigation": "Restrict iam:CreatePolicyVersion or enforce permissions boundaries that prevent modifying managed policies."
+    },
+    {
+      "id": "PRIVESC-02",
+      "name": "IAM SetDefaultPolicyVersion",
+      "severity": "CRITICAL",
+      "risk_score": 90,
+      "description": "User can switch the default policy version to a previous, potentially more permissive policy version.",
+      "required_permissions": [
+        "iam:SetDefaultPolicyVersion"
+      ],
+      "mitigation": "Restrict iam:SetDefaultPolicyVersion or prune obsolete permissive policy versions."
+    },
+    {
+      "id": "PRIVESC-03",
+      "name": "IAM CreateAccessKey",
+      "severity": "CRITICAL",
+      "risk_score": 95,
+      "description": "User can generate access keys for any IAM user, allowing impersonation of administrators.",
+      "required_permissions": [
+        "iam:CreateAccessKey"
+      ],
+      "mitigation": "Restrict iam:CreateAccessKey to specific user ARN or enforce self-service only via aws:username condition."
+    },
+    {
+      "id": "PRIVESC-04",
+      "name": "IAM CreateLoginProfile / UpdateLoginProfile",
+      "severity": "CRITICAL",
+      "risk_score": 95,
+      "description": "User can create or reset console passwords for any IAM user.",
+      "required_permissions": [
+        ["iam:CreateLoginProfile"],
+        ["iam:UpdateLoginProfile"]
+      ],
+      "mitigation": "Do not grant unrestricted iam:CreateLoginProfile or iam:UpdateLoginProfile permissions."
+    },
+    {
+      "id": "PRIVESC-05",
+      "name": "IAM AttachPolicy (User / Group / Role)",
+      "severity": "CRITICAL",
+      "risk_score": 98,
+      "description": "User can attach managed policies (such as AdministratorAccess) to themselves, groups, or assumable roles.",
+      "required_permissions": [
+        ["iam:AttachUserPolicy"],
+        ["iam:AttachGroupPolicy"],
+        ["iam:AttachRolePolicy"]
+      ],
+      "mitigation": "Restrict iam:Attach*Policy permissions using IAM condition keys or permissions boundaries."
+    },
+    {
+      "id": "PRIVESC-06",
+      "name": "IAM PutPolicy (User / Group / Role)",
+      "severity": "CRITICAL",
+      "risk_score": 98,
+      "description": "User can inject arbitrary inline policies granting full administrative privileges.",
+      "required_permissions": [
+        ["iam:PutUserPolicy"],
+        ["iam:PutGroupPolicy"],
+        ["iam:PutRolePolicy"]
+      ],
+      "mitigation": "Disallow iam:Put*Policy permissions and enforce managed policies governed by IaC."
+    },
+    {
+      "id": "PRIVESC-07",
+      "name": "IAM AddUserToGroup",
+      "severity": "HIGH",
+      "risk_score": 85,
+      "description": "User can add themselves or other entities to privileged administrative groups.",
+      "required_permissions": [
+        "iam:AddUserToGroup"
+      ],
+      "mitigation": "Restrict iam:AddUserToGroup to non-admin groups or require approval workflows."
+    },
+    {
+      "id": "PRIVESC-08",
+      "name": "IAM UpdateAssumeRolePolicy",
+      "severity": "CRITICAL",
+      "risk_score": 95,
+      "description": "User can alter trust relationships of administrative roles to grant themselves assumption rights.",
+      "required_permissions": [
+        "iam:UpdateAssumeRolePolicy"
+      ],
+      "mitigation": "Protect role trust policies and enforce approval controls on iam:UpdateAssumeRolePolicy."
+    },
+    {
+      "id": "PRIVESC-09",
+      "name": "EC2 RunInstances + PassRole",
+      "severity": "HIGH",
+      "risk_score": 88,
+      "description": "User can launch an EC2 instance with an attached high-privilege instance profile and extract temporary credentials via IMDS.",
+      "required_permissions": [
+        "iam:PassRole",
+        "ec2:RunInstances"
+      ],
+      "mitigation": "Restrict iam:PassRole with Resource constraints specifying only low-privilege service roles."
+    },
+    {
+      "id": "PRIVESC-10",
+      "name": "Lambda CreateFunction + PassRole + Invoke",
+      "severity": "HIGH",
+      "risk_score": 88,
+      "description": "User can create and invoke a Lambda function executing under an administrative IAM role.",
+      "required_permissions": [
+        "iam:PassRole",
+        "lambda:CreateFunction"
+      ],
+      "mitigation": "Scope iam:PassRole to specific Lambda roles and enforce code review pipelines."
+    },
+    {
+      "id": "PRIVESC-11",
+      "name": "Glue CreateDevEndpoint + PassRole",
+      "severity": "HIGH",
+      "risk_score": 82,
+      "description": "User can create an AWS Glue development endpoint attached to a privileged role to execute arbitrary code.",
+      "required_permissions": [
+        "iam:PassRole",
+        "glue:CreateDevEndpoint"
+      ],
+      "mitigation": "Restrict iam:PassRole on AWS Glue service endpoints."
+    },
+    {
+      "id": "PRIVESC-12",
+      "name": "CloudFormation CreateStack + PassRole",
+      "severity": "HIGH",
+      "risk_score": 85,
+      "description": "User can deploy a CloudFormation stack using an administrative service role to create new admin assets.",
+      "required_permissions": [
+        "iam:PassRole",
+        "cloudformation:CreateStack"
+      ],
+      "mitigation": "Constrain CloudFormation role passing and enforce stack change-set approvals."
+    },
+    {
+      "id": "PRIVESC-13",
+      "name": "CodeBuild CreateProject + StartBuild + PassRole",
+      "severity": "HIGH",
+      "risk_score": 85,
+      "description": "User can create a CodeBuild project with a high-privilege service role and run build steps with arbitrary commands.",
+      "required_permissions": [
+        "iam:PassRole",
+        "codebuild:CreateProject"
+      ],
+      "mitigation": "Limit CodeBuild service role permissions and restrict iam:PassRole targets."
+    },
+    {
+      "id": "PRIVESC-14",
+      "name": "SageMaker CreateNotebookInstance + PassRole",
+      "severity": "HIGH",
+      "risk_score": 80,
+      "description": "User can launch a SageMaker notebook instance using an admin role and access terminal shell.",
+      "required_permissions": [
+        "iam:PassRole",
+        "sagemaker:CreateNotebookInstance"
+      ],
+      "mitigation": "Restrict SageMaker instance profile assignments and enforce VPC-only connectivity."
+    }
+  ]
+}

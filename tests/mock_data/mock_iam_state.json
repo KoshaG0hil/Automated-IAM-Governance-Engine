@@ -1,0 +1,121 @@
+{
+  "account_id": "123456789012",
+  "roles": [
+    {
+      "RoleName": "SecOpsReadOnlyRole",
+      "Arn": "arn:aws:iam::123456789012:role/SecOpsReadOnlyRole",
+      "CreateDate": "2026-01-15T10:00:00Z",
+      "PermissionsBoundary": null,
+      "AttachedPolicies": [
+        {
+          "PolicyName": "SecurityAudit",
+          "PolicyArn": "arn:aws:iam::aws:policy/SecurityAudit"
+        },
+        {
+          "PolicyName": "ViewOnlyAccess",
+          "PolicyArn": "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
+        }
+      ],
+      "InlinePolicies": {}
+    },
+    {
+      "RoleName": "AppBackendServiceRole",
+      "Arn": "arn:aws:iam::123456789012:role/AppBackendServiceRole",
+      "CreateDate": "2026-02-10T12:00:00Z",
+      "PermissionsBoundary": null,
+      "AttachedPolicies": [
+        {
+          "PolicyName": "AppBackendLeastPrivilegePolicy",
+          "PolicyArn": "arn:aws:iam::123456789012:policy/AppBackendLeastPrivilegePolicy"
+        },
+        {
+          "PolicyName": "AdministratorAccess",
+          "PolicyArn": "arn:aws:iam::aws:policy/AdministratorAccess"
+        }
+      ],
+      "InlinePolicies": {
+        "DirectS3Bypass": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "s3:*",
+              "Resource": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "RoleName": "DevOpsShadowAdminRole",
+      "Arn": "arn:aws:iam::123456789012:role/DevOpsShadowAdminRole",
+      "CreateDate": "2026-09-28T14:30:00Z",
+      "PermissionsBoundary": null,
+      "AttachedPolicies": [],
+      "InlinePolicies": {
+        "PrivEscPolicy": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "iam:PassRole",
+                "ec2:RunInstances"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "iam:CreatePolicyVersion"
+              ],
+              "Resource": "*"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "users": [
+    {
+      "UserName": "audit-engineer",
+      "Arn": "arn:aws:iam::123456789012:user/audit-engineer",
+      "CreateDate": "2026-01-10T08:00:00Z",
+      "PermissionsBoundary": null,
+      "Groups": ["SecurityAuditors"],
+      "AttachedPolicies": [],
+      "InlinePolicies": {},
+      "MFADevices": [{"SerialNumber": "arn:aws:iam::123456789012:mfa/audit-engineer"}]
+    },
+    {
+      "UserName": "contractor-temp-admin",
+      "Arn": "arn:aws:iam::123456789012:user/contractor-temp-admin",
+      "CreateDate": "2026-09-25T11:00:00Z",
+      "PermissionsBoundary": null,
+      "Groups": [],
+      "AttachedPolicies": [
+        {
+          "PolicyName": "AdministratorAccess",
+          "PolicyArn": "arn:aws:iam::aws:policy/AdministratorAccess"
+        }
+      ],
+      "InlinePolicies": {
+        "BannedActionPolicy": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "iam:DeactivateMFADevice",
+                "cloudtrail:StopLogging"
+              ],
+              "Resource": "*"
+            }
+          ]
+        }
+      },
+      "MFADevices": []
+    }
+  ],
+  "customer_policies": []
+}

@@ -1,0 +1,72 @@
+version: "1.0"
+metadata:
+  account_id: "123456789012"
+  environment: "production"
+  last_updated: "2026-09-30"
+  description: "Enterprise Least-Privilege IAM Baseline & Security Guardrails"
+
+global_guardrails:
+  max_access_key_age_days: 90
+  max_inactive_key_days: 90
+  enforce_mfa_for_console_access: true
+  require_permissions_boundary_for_roles: true
+  allowed_permissions_boundaries:
+    - "arn:aws:iam::123456789012:policy/StandardPermissionsBoundary"
+    - "arn:aws:iam::123456789012:policy/DeveloperPermissionsBoundary"
+  disallow_wildcard_actions: true
+  disallow_wildcard_resources_on_write: true
+  banned_actions:
+    - "iam:DeactivateMFADevice"
+    - "iam:DeleteAccountPasswordPolicy"
+    - "cloudtrail:StopLogging"
+    - "cloudtrail:DeleteTrail"
+    - "kms:ScheduleKeyDeletion"
+
+approved_roles:
+  - role_name: "SecOpsReadOnlyRole"
+    description: "Security Operations Read-Only Audit Role"
+    allowed_attached_policies:
+      - "arn:aws:iam::aws:policy/SecurityAudit"
+      - "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
+    allow_inline_policies: false
+    permissions_boundary_required: false
+    max_session_duration_seconds: 3600
+
+  - role_name: "AppBackendServiceRole"
+    description: "Backend Microservice Production Role"
+    allowed_attached_policies:
+      - "arn:aws:iam::123456789012:policy/AppBackendLeastPrivilegePolicy"
+    allow_inline_policies: false
+    permissions_boundary_required: true
+    permissions_boundary: "arn:aws:iam::123456789012:policy/StandardPermissionsBoundary"
+    max_session_duration_seconds: 3600
+
+  - role_name: "CICDPipelineRole"
+    description: "Automated Deployment Role"
+    allowed_attached_policies:
+      - "arn:aws:iam::123456789012:policy/CICDDeployerPolicy"
+    allow_inline_policies: false
+    permissions_boundary_required: true
+    permissions_boundary: "arn:aws:iam::123456789012:policy/DeveloperPermissionsBoundary"
+    max_session_duration_seconds: 7200
+
+approved_users:
+  - user_name: "audit-engineer"
+    allowed_groups:
+      - "SecurityAuditors"
+    allowed_attached_policies: []
+    allow_inline_policies: false
+    allow_console_access: true
+    require_mfa: true
+    allow_access_keys: false
+
+  - user_name: "automation-service-user"
+    allowed_groups:
+      - "ServiceAccounts"
+    allowed_attached_policies:
+      - "arn:aws:iam::123456789012:policy/ServiceAccountLimitedPolicy"
+    allow_inline_policies: false
+    allow_console_access: false
+    require_mfa: false
+    allow_access_keys: true
+    max_active_keys: 1

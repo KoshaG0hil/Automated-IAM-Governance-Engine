@@ -1,0 +1,31 @@
+{
+  "version": "0",
+  "id": "7b587a8e-28f9-4674-8b63-d14cf9834e56",
+  "detail-type": "AWS API Call via CloudTrail",
+  "source": "aws.iam",
+  "account": "123456789012",
+  "time": "2026-09-30T10:15:30Z",
+  "region": "us-east-1",
+  "resources": [],
+  "detail": {
+    "eventVersion": "1.08",
+    "userIdentity": {
+      "type": "IAMUser",
+      "principalId": "AIDAEXAMPLEUSERID",
+      "arn": "arn:aws:iam::123456789012:user/contractor-temp-admin",
+      "accountId": "123456789012",
+      "userName": "contractor-temp-admin"
+    },
+    "eventTime": "2026-09-30T10:15:30Z",
+    "eventSource": "iam.amazonaws.com",
+    "eventName": "AttachRolePolicy",
+    "awsRegion": "us-east-1",
+    "sourceIPAddress": "198.51.100.42",
+    "userAgent": "AWS Internal / Console",
+    "requestParameters": {
+      "roleName": "AppBackendServiceRole",
+      "policyArn": "arn:aws:iam::aws:policy/AdministratorAccess"
+    },
+    "responseElements": null
+  }
+}

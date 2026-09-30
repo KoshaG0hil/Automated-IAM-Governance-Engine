@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.pytest_cache/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.tfstate.lock.info
+terraform.tfvars
+lambda_bundle.zip
+
+# IDEs
+.vscode/
+.idea/
+
+# Reports (keep directory)
+reports/*.json
+reports/*.csv
+reports/iam_audit_*.html
