@@ -122,6 +122,9 @@ Automated-IAM-Governance-Engine/
 
 ## ⚡ Quickstart & Local Execution
 
+> 📖 **Full step-by-step instructions available in [HOW_TO_RUN.md](HOW_TO_RUN.md)**  
+> 💡 **Windows users can simply run `.\run.ps1` or double-click `run.bat` for an interactive 1-click menu.**
+
 ### 1. Install Dependencies
 ```bash
 pip install -r requirements.txt
