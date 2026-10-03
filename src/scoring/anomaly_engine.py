@@ -2,6 +2,7 @@
 
 from collections import defaultdict
 from typing import Any, Dict, List
+from .ai_triage import AITriageLayer
 
 
 class AnomalyScoringEngine:
@@ -13,6 +14,9 @@ class AnomalyScoringEngine:
         "MEDIUM": 5,
         "LOW": 1
     }
+
+    def __init__(self):
+        self.ai_triage = AITriageLayer()
 
     def process_findings(self, raw_findings: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Enrich raw findings with anomaly scores, compound risk, and generate summary metrics."""
@@ -49,11 +53,14 @@ class AnomalyScoringEngine:
         # 2. Sort findings by adjusted risk score descending
         enriched_findings.sort(key=lambda x: x.get("adjusted_risk_score", 0), reverse=True)
 
-        # 3. Calculate Account Posture Score (0-100%)
-        # Base 100, deductions weighted by severity
+        # 3. Apply AI Triage Layer (Investigation Queue, Blast Radius, CLI Remediation)
+        self.ai_triage.enrich_all(enriched_findings)
+
+        # 4. Calculate Account Posture Score & Queue Distributions
         total_deduction = 0
         severity_counts = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0}
         category_counts = defaultdict(int)
+        queue_counts = defaultdict(int)
 
         for finding in enriched_findings:
             sev = finding.get("severity", "LOW")
@@ -62,6 +69,9 @@ class AnomalyScoringEngine:
 
             cat = finding.get("category", "MISC")
             category_counts[cat] += 1
+
+            queue = finding.get("investigation_queue", "QUEUE-4")
+            queue_counts[queue] += 1
 
         posture_score = max(0, 100 - total_deduction)
 
@@ -78,5 +88,6 @@ class AnomalyScoringEngine:
             "total_findings": len(enriched_findings),
             "severity_breakdown": severity_counts,
             "category_breakdown": dict(category_counts),
+            "investigation_queue_breakdown": dict(queue_counts),
             "findings": enriched_findings
         }
